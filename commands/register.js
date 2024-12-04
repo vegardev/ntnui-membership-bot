@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const discord_ntnui_pairs = require("../../discord_ntnui_pairs.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -40,11 +41,12 @@ module.exports = {
     ),
   async execute(interaction) {
     const phone_number = interaction.options.getString("Phone number");
-    const member = interaction.user.id;
+    const member = interaction.user;
+    const discordId = interaction.user.id;
 
-    function getKeyByValue(object, value) {
-      return Object.keys(object).find((key) => object[key] === value);
-    }
+    //function getKeyByValue(object, value) {
+    //  return Object.keys(object).find((key) => object[key] === value);
+    //}
 
     // every eligible member must /register <phone_number>
     // this calls a function that iterates over all members,
@@ -52,10 +54,7 @@ module.exports = {
     // ntnui_no as value to their Discord ID key.
 
     const apiCall = "api.ntnui.no/groups/esport/memberships/";
-    const memberships = [];
-    const discord_ntnui_pairs = {
-      240125663619579905: 134882,
-    };
+    let memberships = [];
 
     fetch(apiCall)
       .then((response) => {
@@ -71,25 +70,27 @@ module.exports = {
       .catch((error) => {
         console.error("Error:", error);
       });
+
+    // new entry into json list of members
     for (i = 0; i < memberships.length; i++) {
       if (phone_number === memberships[i].phone_number) {
-        discord_ntnui_pairs[guildMemberId] = memberships[i].ntnui_no;
+        discord_ntnui_pairs[discordId] = memberships[i].ntnui_no;
       } else {
-        bot.reply(`${argument} is not a valid phone number.`);
+        await interaction.reply(`${argument} is not a valid phone number.`);
       }
     }
 
     // iterate over every membership in group 'esport'
     for (i = 0; i < memberships.length; i++) {
       // set current member to be Discord ID in accordance with their ntnui_no
-      let member = getKeyByValue(discord_ntnui_pairs, i);
+      // const member = getKeyByValue(discord_ntnui_pairs, i);
 
       if (memberships[i].has_valid_group_membership) {
         // grant current member "Member" role
-        guildMember.roles.add("Member");
+        member.role.add("1313952906453585970");
       } else {
         // revoke "Member" role
-        guildMember.roles.remove("Member");
+        member.role.remove("1313952906453585970");
       }
     }
 
