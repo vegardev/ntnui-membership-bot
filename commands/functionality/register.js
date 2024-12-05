@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require("discord.js");
-const discord_ntnui_pairs = require("../../discord_ntnui_pairs.json");
+const { SlashCommandBuilder, MessageFlags } = require("discord.js");
+const discord_ntnui_pairs = require("../../discord-ntnui-pairs.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,15 +21,17 @@ module.exports = {
     })
     .addIntegerOption((option) =>
       option
-        .setName("Phone number")
+        .setName("phone_number")
         .setNameLocalizations({
-          no: "Telefonnummer",
-          "sv-SE": "Telefonnummer",
-          de: "Telefonnummer",
-          pl: "Numer",
-          fi: "Puhelinnumero",
+          no: "telefonnummer",
+          "sv-SE": "telefonnummer",
+          de: "telefonnummer",
+          pl: "numer",
+          fi: "puhelinnumero",
         })
-        .setDescription("The phone number registered to your NTNUI account.")
+        .setDescription(
+          "The phone number registered to your NTNUI account — don't include country code."
+        )
         .setDescriptionLocalizations({
           no: "Telefonnummeret som er registrert til din NTNUI-konto.",
           "sv-SE": "Telefonnumret som är registrerat på ditt NTNUI-konto.",
@@ -40,20 +42,20 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    const phone_number = interaction.options.getString("Phone number");
+    const phone_number = interaction.options.getInteger("phone_number");
     const member = interaction.user;
     const discordId = interaction.user.id;
 
-    //function getKeyByValue(object, value) {
-    //  return Object.keys(object).find((key) => object[key] === value);
-    //}
+    function getKeyByValue(object, value) {
+      return Object.keys(object).find((key) => object[key] === value);
+    }
 
     // every eligible member must /register <phone_number>
     // this calls a function that iterates over all members,
     // find member with corresponding phone number and set their
     // ntnui_no as value to their Discord ID key.
 
-    const apiCall = "api.ntnui.no/groups/esport/memberships/";
+    const apiCall = "https://api.ntnui.no/groups/esport/memberships/";
     let memberships = [];
 
     fetch(apiCall)
@@ -68,7 +70,7 @@ module.exports = {
         return memberships;
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error(error);
       });
 
     // new entry into json list of members
@@ -76,14 +78,17 @@ module.exports = {
       if (phone_number === memberships[i].phone_number) {
         discord_ntnui_pairs[discordId] = memberships[i].ntnui_no;
       } else {
-        await interaction.reply(`${argument} is not a valid phone number.`);
+        await interaction.reply({
+          content: `${argument} is not a valid phone number.`,
+          flag: MessageFlags.Ephemeral,
+        });
       }
     }
 
     // iterate over every membership in group 'esport'
     for (i = 0; i < memberships.length; i++) {
       // set current member to be Discord ID in accordance with their ntnui_no
-      // const member = getKeyByValue(discord_ntnui_pairs, i);
+      const member = getKeyByValue(discord_ntnui_pairs, i);
 
       if (memberships[i].has_valid_group_membership) {
         // grant current member "Member" role
@@ -94,8 +99,9 @@ module.exports = {
       }
     }
 
-    await interaction.reply(
-      `Phone number ${phone_number} has been registered!`
-    );
+    await interaction.reply({
+      content: `Phone number ${phone_number} has been registered!`,
+      flags: MessageFlags.Ephemeral,
+    });
   },
 };

@@ -57,14 +57,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return;
   }
 
-  if (command === "register") {
-    await interaction.reply({
-      content:
-        "Your NTNUI user might've been linked to your Discord user... or not shrug",
-      flags: MessageFlags.Ephemeral,
-    });
-  }
-
   try {
     await command.execute(interaction);
   } catch (error) {
