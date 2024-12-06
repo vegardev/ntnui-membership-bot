@@ -8,7 +8,27 @@ const {
   GatewayIntentBits,
   MessageFlags,
 } = require("discord.js");
+const Sequelize = require("sequelize");
 const { token } = require("./config.json");
+
+const sequelize = new Sequelize("database", "user", "password", {
+  host: "localhost",
+  dialect: "sqlite",
+  logging: false,
+  // SQLite only
+  storage: "database.sqlite",
+});
+
+const DiscordNTNUIPairs = sequelize.define("DiscordNTNUIPairs", {
+  discord_id: {
+    type: Sequelize.INTEGER,
+    unique: true,
+  },
+  ntnui_id: { type: Sequelize.INTEGER, unique: true },
+  group_expiry: { type: Sequelize.DATE },
+});
+
+module.exports = { DiscordNTNUIPairs };
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -41,6 +61,7 @@ for (const folder of commandFolders) {
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
 client.once(Events.ClientReady, (readyClient) => {
+  DiscordNTNUIPairs.sync({ force: true });
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 

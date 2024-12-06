@@ -1,4 +1,4 @@
 node_modules
 *.env
 config.json
-discord-ntnui-pairs.json
+database.sqlite

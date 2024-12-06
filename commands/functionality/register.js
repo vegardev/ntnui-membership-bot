@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, MessageFlags } = require("discord.js");
-const discord_ntnui_pairs = require("../../discord-ntnui-pairs.json");
+const { DiscordNTNUIPairs } = require("../../main.js");
+const { fetchMemberships } = require("../../utilities.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -43,65 +44,42 @@ module.exports = {
     ),
   async execute(interaction) {
     const phone_number = interaction.options.getInteger("phone_number");
-    const member = interaction.user;
     const discordId = interaction.user.id;
-
-    function getKeyByValue(object, value) {
-      return Object.keys(object).find((key) => object[key] === value);
-    }
 
     // every eligible member must /register <phone_number>
     // this calls a function that iterates over all members,
     // find member with corresponding phone number and set their
     // ntnui_no as value to their Discord ID key.
 
-    const apiCall = "https://api.ntnui.no/groups/esport/memberships/";
-    let memberships = [];
+    const memberships = await fetchMemberships();
 
-    fetch(apiCall)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Could not connect to Sprint API.");
-        }
-      })
-      .then((data) => {
-        console.log("Data returned successfully.");
-        memberships = data.json();
-        return memberships;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    // new entry into json list of members
+    // new entry into SQLite database
     for (i = 0; i < memberships.length; i++) {
       if (phone_number === memberships[i].phone_number) {
-        discord_ntnui_pairs[discordId] = memberships[i].ntnui_no;
+        try {
+          const new_pair = await DiscordNTNUIPairs.create({
+            discord_id: discordId,
+            ntnui_id: memberships[i].ntnui_id,
+            group_expiry: memberships[i].group_expiry,
+          });
+          return interaction.reply({
+            content: `Your Discord account has successfully been linked to NTNUI user ${new_pair.ntnui_id}.`,
+            flags: MessageFlags.Ephemeral,
+          });
+        } catch (error) {
+          if (error.name === "SequelizeUniqueConstraintError") {
+            return interaction.reply({
+              content: `Either Discord ID or phone number is already registered.`,
+              flags: MessageFlags.Ephemeral,
+            });
+          }
+        }
       } else {
         await interaction.reply({
           content: `${argument} is not a valid phone number.`,
-          flag: MessageFlags.Ephemeral,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
-
-    // iterate over every membership in group 'esport'
-    for (i = 0; i < memberships.length; i++) {
-      // set current member to be Discord ID in accordance with their ntnui_no
-      const member = getKeyByValue(discord_ntnui_pairs, i);
-
-      if (memberships[i].has_valid_group_membership) {
-        // grant current member "Member" role
-        member.role.add("1313952906453585970");
-      } else {
-        // revoke "Member" role
-        member.role.remove("1313952906453585970");
-      }
-    }
-
-    await interaction.reply({
-      content: `Phone number ${phone_number} has been registered!`,
-      flags: MessageFlags.Ephemeral,
-    });
   },
 };
