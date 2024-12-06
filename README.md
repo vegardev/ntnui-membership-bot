@@ -10,6 +10,8 @@ The bot is built with:
 
 ## 🚀 Quick Start and prerequisites
 Make sure to have the latest version of git and Node installed.
+
+Make sure you have the required access permissions for the API.
 1. Clone the repository
 
    ```bash
@@ -43,7 +45,9 @@ Make sure to have the latest version of git and Node installed.
 | `/grant OR revoke <discord_username>`| Grants or revokes membership role to `<discord_username>`                      | 'Styret' (Board member)            |
 | `/refresh`                           | Refresh the local database with up-to-date membership statuses.                | 'Styret' (Board member)            |
 
-[![Bot in action](https://i.gyazo.com/92b7038b1ff71da85fb94ad222349e0f.gif)](https://gyazo.com/92b7038b1ff71da85fb94ad222349e0f)
+<p align="center">
+   <img src="https://i.gyazo.com/92b7038b1ff71da85fb94ad222349e0f.gif" alt="Bot in action">
+</p>
 
 ## 🕴️Privacy &mdash; what data is being stored
 Privacy is top priority.
