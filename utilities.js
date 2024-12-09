@@ -1,11 +1,16 @@
-const MEMBER_ROLE_ID = "1313952906453585970";
+const { API, API_LINK } = require("./config.json");
 
 async function fetchMemberships() {
-  const apiCall = "https://api.ntnui.no/groups/esport/memberships/";
+  const apiCall = API_LINK;
   let memberships = [];
 
   try {
-    const response = await fetch(apiCall);
+    const response = await fetch(apiCall, {
+      headers: {
+        accept: "application/json",
+        "API-KEY": API,
+      },
+    });
     if (!response.ok) {
       throw new Error("Could not connect to Sprint API.");
     }
@@ -18,12 +23,4 @@ async function fetchMemberships() {
   return memberships;
 }
 
-async function grantRole(member) {
-  await member.roles.add(MEMBER_ROLE_ID);
-}
-
-async function revokeRole(member) {
-  await member.roles.remove(MEMBER_ROLE_ID);
-}
-
-module.exports = { fetchMemberships, grantRole, revokeRole };
+module.exports = { fetchMemberships };

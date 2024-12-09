@@ -24,7 +24,8 @@ const DiscordNTNUIPairs = sequelize.define("DiscordNTNUIPairs", {
     type: Sequelize.INTEGER,
     unique: true,
   },
-  ntnui_id: { type: Sequelize.INTEGER, unique: true },
+  ntnui_no: { type: Sequelize.INTEGER, unique: true },
+  has_valid_group_membership: { type: Sequelize.BOOLEAN },
   group_expiry: { type: Sequelize.DATE },
 });
 
