@@ -1,7 +1,11 @@
-const { SlashCommandBuilder, MessageFlags } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../main.js");
-const { MEMBER_ROLE } = require("../../config.json");
-
+const {
+  SlashCommandBuilder,
+  MessageFlags,
+  PermissionFlagsBits,
+  InteractionContextType,
+} = require("discord.js");
+const { DiscordNTNUIPairs } = require("../../database.js");
+const { fetchRole } = require("../../utilities.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("unregister")
@@ -11,12 +15,12 @@ module.exports = {
         .setName("target")
         .setDescription("Discord account to unregister.")
         .setRequired(true)
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+    .setContexts(InteractionContextType.Guild),
   async execute(interaction) {
     const member = interaction.options.getMember("target");
-    const role = interaction.guild.roles.cache.find(
-      (role) => role.name === MEMBER_ROLE
-    );
+    const role = await fetchRole(interaction);
 
     if (!role) {
       return interaction.reply({

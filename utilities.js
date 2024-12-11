@@ -1,4 +1,4 @@
-const { API, API_LINK } = require("./config.json");
+const { API, API_LINK, MEMBER_ROLE } = require("./config.json");
 
 async function fetchMemberships() {
   const apiCall = API_LINK;
@@ -23,4 +23,11 @@ async function fetchMemberships() {
   return memberships;
 }
 
-module.exports = { fetchMemberships };
+async function fetchRole(interaction) {
+  const role = interaction.guild.roles.cache.find(
+    (role) => role.name === MEMBER_ROLE
+  );
+
+  return role;
+}
+module.exports = { fetchMemberships, fetchRole };

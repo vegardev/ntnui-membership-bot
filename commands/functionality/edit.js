@@ -1,7 +1,11 @@
-const { SlashCommandBuilder, MessageFlags } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../main.js");
-const { fetchMemberships } = require("../../utilities.js");
-const { MEMBER_ROLE } = require("../../config.json");
+const {
+  SlashCommandBuilder,
+  MessageFlags,
+  PermissionFlagsBits,
+  InteractionContextType,
+} = require("discord.js");
+const { DiscordNTNUIPairs } = require("../../database.js");
+const { fetchMemberships, fetchRole } = require("../../utilities.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,15 +26,42 @@ module.exports = {
           "The new phone number to assign this Discord account — include country code (e.g. +47)."
         )
         .setRequired(true)
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+    .setContexts(InteractionContextType.Guild),
   async execute(interaction) {
     const memberships = await fetchMemberships();
+    const role = await fetchRole(interaction);
     const member = interaction.options.getMember("target");
+    const phone_number = interaction.options.getString("phone_number");
     let new_ntnui_no = 0;
+    let new_group_expiry = "";
     let grant = false;
-    const role = interaction.guild.roles.cache.find(
-      (role) => role.name === MEMBER_ROLE
-    );
+    const phone_regex = /^\+\d+$/;
+    const registered = await DiscordNTNUIPairs.findOne({
+      where: { discord_id: member.id },
+    });
+
+    if (!registered) {
+      return interaction.reply({
+        content: `❔ Could not find a registered Discord account.\n\n📝 Make sure they are registered!`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (!phone_number.match(phone_regex)) {
+      return interaction.reply({
+        content: `❌ Please use a phone number with its country code (for example +47).`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (!role) {
+      return interaction.reply({
+        content: "⚠️ Error: Could not find the required role.",
+        ephemeral: true,
+      });
+    }
 
     // iterate over every membership in group
     for (let i = 0; i < memberships.results.length; i++) {
@@ -38,27 +69,30 @@ module.exports = {
         continue;
       }
       new_ntnui_no = memberships.results[i].ntnui_no;
-      grant = memberships.results[i].has_valid_group_membership ? true : false;
+      new_group_expiry = memberships.results[i].group_expiry;
+      grant = memberships.results[i].has_valid_group_membership;
     }
 
     try {
       const affectedRows = await DiscordNTNUIPairs.update(
         {
           ntnui_no: new_ntnui_no,
+          has_valid_group_membership: grant,
+          group_expiry: new_group_expiry,
         },
         { where: { discord_id: member.id } }
       );
 
       if (affectedRows > 0 && new_ntnui_no !== 0) {
-        await interaction.reply({
-          content: `✅ ${member.id} was edited, new NTNUI ID is ${new_ntnui_no}.`,
+        if (grant) {
+          member.roles.add(role);
+        } else {
+          member.roles.remove(role);
+        }
+        return interaction.reply({
+          content: `✅ ${member.displayName} was edited, their new NTNUI ID is ${new_ntnui_no}.`,
           flags: MessageFlags.Ephemeral,
         });
-        if (grant) {
-          member.roles.add(MEMBER_ROLE);
-        } else {
-          member.roles.remove(MEMBER_ROLE);
-        }
       }
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
@@ -68,10 +102,5 @@ module.exports = {
         });
       }
     }
-
-    return interaction.reply({
-      content: `❔ Could not find a valid Discord account.`,
-      flags: MessageFlags.Ephemeral,
-    });
   },
 };

@@ -1,7 +1,10 @@
-const { SlashCommandBuilder, MessageFlags } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../main.js");
-const { fetchMemberships } = require("../../utilities.js");
-const { MEMBER_ROLE } = require("../../config.json");
+const {
+  SlashCommandBuilder,
+  MessageFlags,
+  InteractionContextType,
+} = require("discord.js");
+const { DiscordNTNUIPairs } = require("../../database.js");
+const { fetchMemberships, fetchRole } = require("../../utilities.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -42,33 +45,32 @@ module.exports = {
           fi: "NTNUI-tiliisi rekisteröity puhelinnumero.",
         })
         .setRequired(true)
-    ),
+    )
+    .setContexts(InteractionContextType.Guild),
   async execute(interaction) {
     const phone_number = interaction.options.getString("phone_number");
     const discordId = interaction.member.id;
-    const role = interaction.guild.roles.cache.find(
-      (role) => role.name === MEMBER_ROLE
-    );
     // every eligible member must /register <phone_number>
     // this calls a function that iterates over all members,
     // find member with corresponding phone number and set their
     // ntnui_no as value to their Discord ID key.
     const phone_regex = /^\+\d+$/;
     const memberships = await fetchMemberships();
+    const role = await fetchRole(interaction);
     const registered = await DiscordNTNUIPairs.findOne({
       where: { discord_id: discordId },
     });
 
-    if (!phone_number.match(phone_regex)) {
+    if (registered) {
       return interaction.reply({
-        content: `❌ Please use a phone number with its country code (for example +47).`,
+        content: `❌ Your Discord account is already registered.`,
         flags: MessageFlags.Ephemeral,
       });
     }
 
-    if (registered) {
+    if (!phone_number.match(phone_regex)) {
       return interaction.reply({
-        content: `❌ Your Discord account is already registered.`,
+        content: `❌ Please use a phone number with its country code (for example +47).`,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -92,7 +94,7 @@ module.exports = {
           await interaction.member.roles.add(role);
         }
         return interaction.reply({
-          content: `🎉 Your Discord account has successfully been linked to NTNUI!`,
+          content: `🎉 Your Discord account has successfully been linked to NTNUI, welcome aboard **${memberships.results[i].first_name} ${memberships.results[i].last_name}**`,
           flags: MessageFlags.Ephemeral,
         });
       } catch (error) {
@@ -107,7 +109,7 @@ module.exports = {
     }
 
     return interaction.reply({
-      content: `💭 '${phone_number}' is not an active phone number.\n📝 Head over here to [✨ NTNUI ✨](https://medlem.ntnui.no/register/verify) to activate your account!`,
+      content: `💭 '${phone_number}' is not an active phone number.\n📝 If this is your phone number, head over here to [✨ NTNUI ✨](https://medlem.ntnui.no/register/verify) to activate your NTNUI account!`,
       flags: MessageFlags.Ephemeral,
     });
   },

@@ -4,6 +4,7 @@ const {
   PermissionFlagsBits,
   InteractionContextType,
 } = require("discord.js");
+const { fetchRole } = require("../../utilities");
 const { MEMBER_ROLE } = require("../../config.json");
 
 module.exports = {
@@ -20,9 +21,7 @@ module.exports = {
     .setContexts(InteractionContextType.Guild),
   async execute(interaction) {
     const member = interaction.options.getMember("target");
-    const role = interaction.guild.roles.cache.find(
-      (role) => role.name === MEMBER_ROLE
-    );
+    const role = await fetchRole(interaction);
     if (!role) {
       return interaction.reply({
         content: `❔ Role ${MEMBER_ROLE} not found in this server.`,
