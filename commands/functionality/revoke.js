@@ -26,7 +26,7 @@ module.exports = {
 
     if (!role) {
       return interaction.reply({
-        content: `Role ${MEMBER_ROLE} not found in this server.`,
+        content: `❔ Role ${MEMBER_ROLE} not found in this server.`,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -35,18 +35,18 @@ module.exports = {
       if (member.roles.cache.some((role) => role.name === MEMBER_ROLE)) {
         await member.roles.remove(role);
         return interaction.reply({
-          content: `Successfully revoked the ${MEMBER_ROLE} role from ${member.displayName}.`,
+          content: `✅ Successfully revoked the ${MEMBER_ROLE} role from ${member.displayName}.`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         return interaction.reply({
-          content: `${member.displayName} had no ${MEMBER_ROLE} role to revoke.`,
+          content: `❌ ${member.displayName} had no ${MEMBER_ROLE} role to revoke.`,
           flags: MessageFlags.Ephemeral,
         });
       }
     } catch (error) {
       return interaction.reply({
-        content: `Failed to revoke role: ${error.message}`,
+        content: `⚠️ Error: Failed to revoke role\n${error.message}`,
         flags: MessageFlags.Ephemeral,
       });
     }

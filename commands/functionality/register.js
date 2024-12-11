@@ -13,7 +13,7 @@ module.exports = {
       pl: "rejestrować",
       fi: "rekisteröidy",
     })
-    .setDescription("Register your NTNUI account to your Discord account.")
+    .setDescription("Register your Discord account to your NTNUI account.")
     .setDescriptionLocalizations({
       no: "Registrer din NTNUI-konto til Discord-kontoen din.",
       "sv-SE": "Registrera ditt NTNUI-konto på ditt Discord-konto.",
@@ -53,8 +53,25 @@ module.exports = {
     // this calls a function that iterates over all members,
     // find member with corresponding phone number and set their
     // ntnui_no as value to their Discord ID key.
-
+    const phone_regex = /^\+\d+$/;
     const memberships = await fetchMemberships();
+    const registered = await DiscordNTNUIPairs.findOne({
+      where: { discord_id: discordId },
+    });
+
+    if (!phone_number.match(phone_regex)) {
+      return interaction.reply({
+        content: `❌ Please use a phone number with its country code (for example +47).`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    if (registered) {
+      return interaction.reply({
+        content: `❌ Your Discord account is already registered.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     // new entry into SQLite database
     for (i = 0; i < memberships.results.length; i++) {
@@ -75,14 +92,14 @@ module.exports = {
           await interaction.member.roles.add(role);
         }
         return interaction.reply({
-          content: `Your Discord account has successfully been linked to NTNUI user ${new_pair.ntnui_no}.`,
+          content: `🎉 Your Discord account has successfully been linked to NTNUI!`,
           flags: MessageFlags.Ephemeral,
         });
       } catch (error) {
         console.log(error);
         if (error.name === "SequelizeUniqueConstraintError") {
           return interaction.reply({
-            content: `Either Discord ID or phone number is already registered.`,
+            content: `⚠️ Error: Either Discord ID or phone number is already registered.`,
             flags: MessageFlags.Ephemeral,
           });
         }
@@ -90,7 +107,7 @@ module.exports = {
     }
 
     return interaction.reply({
-      content: `${phone_number} is not a valid phone number.`,
+      content: `💭 '${phone_number}' is not an active phone number.\n📝 Head over here to [✨ NTNUI ✨](https://medlem.ntnui.no/register/verify) to activate your account!`,
       flags: MessageFlags.Ephemeral,
     });
   },

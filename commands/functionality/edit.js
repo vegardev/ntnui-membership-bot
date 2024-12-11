@@ -51,7 +51,7 @@ module.exports = {
 
       if (affectedRows > 0 && new_ntnui_no !== 0) {
         await interaction.reply({
-          content: `${member.id} was edited, new NTNUI ID is ${new_ntnui_no}.`,
+          content: `✅ ${member.id} was edited, new NTNUI ID is ${new_ntnui_no}.`,
           flags: MessageFlags.Ephemeral,
         });
         if (grant) {
@@ -63,14 +63,14 @@ module.exports = {
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         return interaction.reply({
-          content: `This phone number is already registered.`,
+          content: `⚠️ Error: Phone number is already registered.`,
           flags: MessageFlags.Ephemeral,
         });
       }
     }
 
     return interaction.reply({
-      content: `Could not find a valid Discord account.`,
+      content: `❔ Could not find a valid Discord account.`,
       flags: MessageFlags.Ephemeral,
     });
   },
