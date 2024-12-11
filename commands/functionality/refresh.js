@@ -28,15 +28,16 @@ module.exports = {
         continue;
       }
 
-      // set current member to be Member object in accordance with their ntnui_no
-      const registeredMember = guild.members.fetch(
-        currentRow.get("discord_id")
-      );
+      const discordId = currentRow.get("discord_id");
+      const registeredMember = await guild.members
+        .fetch(discordId)
+        .catch(() => null);
 
-      if (
-        memberships.results[i].has_valid_group_membership &&
-        registeredMember
-      ) {
+      if (!registeredMember) {
+        continue;
+      }
+
+      if (memberships.results[i].has_valid_group_membership) {
         // grant current member MEMBER_ROLE
         await DiscordNTNUIPairs.update(
           {
@@ -44,9 +45,11 @@ module.exports = {
               memberships.results[i].has_valid_group_membership,
             group_expiry: memberships.results[i].group_expiry,
           },
-          { where: { discord_id: registeredMember.id } }
+          { where: { discord_id: discordId } }
         );
-        await registeredMember.roles.add(role);
+        if (!registeredMember.roles.cache.has(role.id)) {
+          await registeredMember.roles.add(role);
+        }
       } else {
         // revoke MEMBER_ROLE
         await DiscordNTNUIPairs.update(
@@ -55,9 +58,11 @@ module.exports = {
               memberships.results[i].has_valid_group_membership,
             group_expiry: memberships.results[i].group_expiry,
           },
-          { where: { discord_id: registeredMember.id } }
+          { where: { discord_id: discordId } }
         );
-        await registeredMember.roles.remove(role);
+        if (registeredMember.roles.cache.has(role.id)) {
+          await registeredMember.roles.remove(role);
+        }
       }
     }
 
