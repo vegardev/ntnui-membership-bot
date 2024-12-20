@@ -4,7 +4,7 @@ const {
   PermissionFlagsBits,
   InteractionContextType,
 } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../database");
+const { Membership } = require("../../db.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -21,9 +21,9 @@ module.exports = {
   async execute(interaction) {
     const member = interaction.options.getMember("target");
 
-    const fetchedRow = await DiscordNTNUIPairs.findOne({
-      where: { discord_id: member.id },
-    });
+    let fetchedRow = await Membership.findOne({
+      discord_id: member.id,
+    }).exec();
 
     if (!fetchedRow) {
       return interaction.reply({
@@ -31,10 +31,11 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
     }
-    const entryDetails = JSON.stringify(fetchedRow.dataValues, null, 2);
+
+    fetchedRow = JSON.stringify(fetchedRow, null, 2);
 
     interaction.reply({
-      content: `🔍 Database entry of ${member.displayName}:\n\`\`\`json\n${entryDetails}\n\`\`\``,
+      content: `🔍 Database entry of ${member.displayName}:\n\`\`\`json\n${fetchedRow}\n\`\`\``,
       flags: MessageFlags.Ephemeral,
     });
   },

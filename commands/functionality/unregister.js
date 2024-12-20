@@ -4,7 +4,7 @@ const {
   PermissionFlagsBits,
   InteractionContextType,
 } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../database.js");
+const { Membership } = require("../../db.js");
 const { fetchRole } = require("../../utilities.js");
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,8 +30,8 @@ module.exports = {
     }
 
     try {
-      const affectedRow = await DiscordNTNUIPairs.destroy({
-        where: { discord_id: member.id },
+      const affectedRow = await Membership.findOneAndDelete({
+        discord_id: member.id,
       });
 
       if (!affectedRow) {

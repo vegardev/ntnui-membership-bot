@@ -3,7 +3,7 @@ const {
   MessageFlags,
   InteractionContextType,
 } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../database.js");
+const { Membership } = require("../../db.js");
 const { fetchMemberships, fetchRole } = require("../../utilities.js");
 
 module.exports = {
@@ -57,7 +57,7 @@ module.exports = {
     const phone_regex = /^\+\d+$/;
     const memberships = await fetchMemberships();
     const role = await fetchRole(interaction);
-    const registered = await DiscordNTNUIPairs.findOne({
+    const registered = await Membership.findOne({
       where: { discord_id: discordId },
     });
 
@@ -82,15 +82,17 @@ module.exports = {
       }
 
       try {
-        const new_pair = await DiscordNTNUIPairs.create({
+        const new_entry = new Membership({
           discord_id: discordId,
           ntnui_no: memberships.results[i].ntnui_no,
           has_valid_group_membership:
             memberships.results[i].has_valid_group_membership,
-          group_expiry: memberships.results[i].group_expiry,
+          ntnui_contract_expiry_date:
+            memberships.results[i].ntnui_contract_expiry_date,
         });
+        await new_entry.save();
 
-        if (role && new_pair.get("has_valid_group_membership")) {
+        if (role && new_entry.has_valid_group_membership) {
           await interaction.member.roles.add(role);
         }
         return interaction.reply({

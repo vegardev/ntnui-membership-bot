@@ -4,7 +4,7 @@ const {
   PermissionFlagsBits,
   InteractionContextType,
 } = require("discord.js");
-const { DiscordNTNUIPairs } = require("../../database.js");
+const { Membership } = require("../../db.js");
 const { fetchMemberships, fetchRole } = require("../../utilities.js");
 
 module.exports = {
@@ -38,8 +38,8 @@ module.exports = {
     let new_group_expiry = "";
     let grant = false;
     const phone_regex = /^\+\d+$/;
-    const registered = await DiscordNTNUIPairs.findOne({
-      where: { discord_id: member.id },
+    const registered = await Membership.findOne({
+      discord_id: member.id,
     });
 
     if (!registered) {
@@ -69,18 +69,19 @@ module.exports = {
         continue;
       }
       new_ntnui_no = memberships.results[i].ntnui_no;
-      new_group_expiry = memberships.results[i].group_expiry;
+      new_ntnui_contract_expiry_date =
+        memberships.results[i].ntnui_contract_expiry_date;
       grant = memberships.results[i].has_valid_group_membership;
     }
 
     try {
-      const affectedRows = await DiscordNTNUIPairs.update(
+      const affectedRows = await Membership.findOneAndUpdate(
+        { discord_id: member.id },
         {
           ntnui_no: new_ntnui_no,
           has_valid_group_membership: grant,
-          group_expiry: new_group_expiry,
-        },
-        { where: { discord_id: member.id } }
+          ntnui_contract_expiry_date: new_ntnui_contract_expiry_date,
+        }
       );
 
       if (affectedRows > 0 && new_ntnui_no !== 0) {
