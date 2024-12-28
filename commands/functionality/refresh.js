@@ -17,6 +17,7 @@ module.exports = {
     const memberships = await fetchMemberships();
     const role = await fetchRole(interaction);
     const guild = interaction.guild;
+    const members = guild.members.cache;
 
     // iterate over every membership in group
     for (let i = 0; i < memberships.results.length; i++) {
@@ -29,44 +30,31 @@ module.exports = {
       }
 
       const discordId = currentRow.get("discord_id");
-      const registeredMember = await guild.members
-        .fetch(discordId)
-        .catch(() => null);
+      const registeredMember = members.get(discordId);
 
       if (!registeredMember) {
         continue;
       }
 
+      await Membership.findOneAndUpdate(
+        { discord_id: discordId },
+        {
+          has_valid_group_membership:
+            memberships.results[i].has_valid_group_membership,
+          ntnui_contract_expiry_date:
+            memberships.results[i].ntnui_contract_expiry_date,
+        }
+      );
       if (memberships.results[i].has_valid_group_membership) {
         // grant current member MEMBER_ROLE
-        await Membership.findOneAndUpdate(
-          { discord_id: discordId },
-          {
-            has_valid_group_membership:
-              memberships.results[i].has_valid_group_membership,
-            group_expiry: memberships.results[i].group_expiry,
-          }
-        );
-        if (!registeredMember.roles.cache.has(role.id)) {
-          await registeredMember.roles.add(role);
-        }
+        await registeredMember.roles.add(role);
       } else {
         // revoke MEMBER_ROLE
-        await Membership.findOneAndUpdate(
-          { discord_id: discordId },
-          {
-            has_valid_group_membership:
-              memberships.results[i].has_valid_group_membership,
-            group_expiry: memberships.results[i].group_expiry,
-          }
-        );
-        if (registeredMember.roles.cache.has(role.id)) {
-          await registeredMember.roles.remove(role);
-        }
+        await registeredMember.roles.remove(role);
       }
     }
 
-    await interaction.reply({
+    return interaction.reply({
       content: "🔃 Memberships have been refreshed!",
       flags: MessageFlags.Ephemeral,
     });

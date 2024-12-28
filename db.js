@@ -5,13 +5,12 @@ const dateOslo = moment.tz(Date.now(), "Europe/Oslo");
 
 const membershipSchema = new Schema(
   {
-    discord_id: { type: Number, unique: true },
-    ntnui_no: { type: Number, unique: true },
+    discord_id: { type: String, unique: true },
+    ntnui_no: { type: String, unique: true },
     has_valid_group_membership: Boolean,
     ntnui_contract_expiry_date: String,
   },
   {
-    id: true,
     strict: true,
     minimize: true,
     autoIndex: true,

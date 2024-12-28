@@ -9,7 +9,7 @@ The bot is built with:
 
 - [discord.js](https://discord.js.org/) for Discord interaction.
 - [Node.js](https://nodejs.org/en) as the runtime environment.
-- [Sequelize](https://sequelize.org/) ORM with the lightweight and feature-rich [SQLite](https://www.sqlite.org/index.html) database engine for local data storage.
+- [MongoDB](https://www.mongodb.com/) NoSQL database engine for efficient, cloud storage.
 
 ## 🚀 Quick Start and prerequisites
 
@@ -34,13 +34,13 @@ Make sure you have the required access permissions for the API.
 
    ```json
    {
-    "token": "your-bot-token",
-    "clientId": "your-bot-client-id",
-    "guildId": "your-server-id"
-    "MEMBER_ROLE": "your-server-role-name",
-    "GROUP_NAME": "ntnui-group-slug",
-    "API": "your-api-access-key",
-    "API_LINK": "your-api-link"
+     "token": "your-bot-token",
+     "clientId": "your-bot-client-id",
+     "guildId": "your-server-id",
+     "MEMBER_ROLE": "your-server-role-name",
+     "GROUP_NAME": "ntnui-group-slug",
+     "API": "your-api-access-key",
+     "API_LINK": "your-api-link"
    }
    ```
 
@@ -52,14 +52,15 @@ Make sure you have the required access permissions for the API.
 
 ## 🗣️ Bot commands
 
-| Commands                              | Explanation                                                                       | Required role           |
-| ------------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
-| `/register <phone_number>`            | Register the current Discord account to the NTNUI account with `<phone_number>`   | Regular member          |
-| `/unregister <phone_number>`          | Unregister a Discord account from their NTNUI account with `<phone_number>`       | 'Styret' (Board member) |
-| `/grant OR revoke <target>`           | Grants or revokes membership role to `<target>`                                   | 'Styret' (Board member) |
-| `/refresh`                            | Refresh the local database with up-to-date membership statuses.                   | 'Styret' (Board member) |
-| `/status <target>`                    | Look up a registered `<target>` Discord account's database entry.                 | 'Styret' (Board member) |
-| `/edit <target> <phone_number>`       | Edits a `<target>` Discord account's NTNUI connection with a new `<phone_number>` | 'Styret' (Board member) |
+| Commands                        | Explanation                                                                       | Required role           |
+| ------------------------------- | --------------------------------------------------------------------------------- | ----------------------- |
+| `/register <phone_number>`      | Register the current Discord account to the NTNUI account with `<phone_number>`   | Regular member          |
+| `/accountinfo`                  | View the current Discord account's membership info.                               | Regular member          |
+| `/unregister <phone_number>`    | Unregister a Discord account from their NTNUI account with `<phone_number>`       | 'Styret' (Board member) |
+| `/grant OR revoke <target>`     | Grants or revokes membership role to `<target>`                                   | 'Styret' (Board member) |
+| `/refresh`                      | Refresh the local database with up-to-date membership statuses.                   | 'Styret' (Board member) |
+| `/status <target>`              | Look up a registered `<target>` Discord account's database entry.                 | 'Styret' (Board member) |
+| `/edit <target> <phone_number>` | Edits a `<target>` Discord account's NTNUI connection with a new `<phone_number>` | 'Styret' (Board member) |
 
 <p align="center">
    <img src="https://i.gyazo.com/92b7038b1ff71da85fb94ad222349e0f.gif" alt="Bot in action">
@@ -86,6 +87,7 @@ Contact us for any concerns or data removal requests at [qt@vegard.moe](mailto:q
 - [x] Have a bare bones, functioning bot.
 - [x] Successful integration of the NTNUI API.
 - [x] Implement an automatic invitation feature for users not part of NTNUI.
+- [x] Migrate from local to cloud storage.
 - [ ] Implement a reminder for users 1 week ahead of group membership expiry.
 - [ ] Full multi-language support.
 - [ ] Provide detailed logs for administrators.

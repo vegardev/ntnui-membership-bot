@@ -75,7 +75,7 @@ module.exports = {
       });
     }
 
-    // new entry into SQLite database
+    // new entry into database
     for (i = 0; i < memberships.results.length; i++) {
       if (phone_number !== memberships.results[i].phone_number) {
         continue;
@@ -101,7 +101,7 @@ module.exports = {
         });
       } catch (error) {
         console.log(error);
-        if (error.name === "SequelizeUniqueConstraintError") {
+        if (error.code === 11000) {
           return interaction.reply({
             content: `⚠️ Error: Either Discord ID or phone number is already registered.`,
             flags: MessageFlags.Ephemeral,
