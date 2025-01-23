@@ -9,7 +9,7 @@ const {
   MessageFlags,
 } = require("discord.js");
 const { token } = require("./config.json");
-const { DiscordNTNUIPairs } = require("./database.js");
+const { refreshSchedule } = require("./scheduler");
 
 // Create a new client instance
 const client = new Client({
@@ -44,7 +44,6 @@ for (const folder of commandFolders) {
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
 client.once(Events.ClientReady, (readyClient) => {
-  DiscordNTNUIPairs.sync({ force: true });
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
@@ -62,7 +61,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 
   try {
-    await command.execute(interaction);
+    await command.execute(interaction, client);
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
@@ -78,3 +77,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
   }
 });
+
+refreshSchedule(client);
+module.exports = { client };

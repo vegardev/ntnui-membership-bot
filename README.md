@@ -9,13 +9,13 @@ The bot is built with:
 
 - [discord.js](https://discord.js.org/) for Discord interaction.
 - [Node.js](https://nodejs.org/en) as the runtime environment.
-- [MongoDB](https://www.mongodb.com/) NoSQL database engine for efficient, cloud storage.
+- [MongoDB](https://www.mongodb.com/) NoSQL database program for efficient cloud storage.
 
 ## 🚀 Quick Start and prerequisites
 
 It is recommended to have the latest version of git and Node installed.
 
-Make sure you have the required access permissions for the API.
+Make sure you have the required access permissions for the API and database.
 
 1. Clone the repository
 
@@ -40,14 +40,17 @@ Make sure you have the required access permissions for the API.
      "MEMBER_ROLE": "your-server-role-name",
      "GROUP_NAME": "ntnui-group-slug",
      "API": "your-api-access-key",
-     "API_LINK": "your-api-link"
+     "API_LINK": "your-api-link",
+     "DB_PASSWORD": "your-db-password",
+     "DB_USERNAME": "your-db-username",
+     "DB_CONNECTION": "your-db-connection"
    }
    ```
 
 4. Run the bot 🎉
 
    ```bash
-   node main.js
+   npm start
    ```
 
 ## 🗣️ Bot commands

@@ -11,6 +11,13 @@ module.exports = {
       discord_id: interaction.member.id,
     });
 
+    if (!accountInfo) {
+      return interaction.reply({
+        content: `❌ Discord user is not registered.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
     const valid = accountInfo.get("has_valid_group_membership");
     const expiry_date = moment(
       accountInfo.get("ntnui_contract_expiry_date")

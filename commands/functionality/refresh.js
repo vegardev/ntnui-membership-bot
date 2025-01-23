@@ -13,9 +13,9 @@ module.exports = {
     .setDescription("Refresh and sync memberships statuses.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .setContexts(InteractionContextType.Guild),
-  async execute(interaction) {
+  async execute(interaction, client) {
     const memberships = await fetchMemberships();
-    const role = await fetchRole(interaction);
+    const role = await fetchRole(client);
     const guild = interaction.guild;
     const members = guild.members.cache;
 

@@ -29,9 +29,9 @@ module.exports = {
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .setContexts(InteractionContextType.Guild),
-  async execute(interaction) {
+  async execute(interaction, client) {
     const memberships = await fetchMemberships();
-    const role = await fetchRole(interaction);
+    const role = await fetchRole(client);
     const member = interaction.options.getMember("target");
     const phone_number = interaction.options.getString("phone_number");
     let new_ntnui_no = 0;

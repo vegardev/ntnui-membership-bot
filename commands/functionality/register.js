@@ -47,7 +47,7 @@ module.exports = {
         .setRequired(true)
     )
     .setContexts(InteractionContextType.Guild),
-  async execute(interaction) {
+  async execute(interaction, client) {
     const phone_number = interaction.options.getString("phone_number");
     const discordId = interaction.member.id;
     // every eligible member must /register <phone_number>
@@ -56,7 +56,7 @@ module.exports = {
     // ntnui_no as value to their Discord ID key.
     const phone_regex = /^\+\d+$/;
     const memberships = await fetchMemberships();
-    const role = await fetchRole(interaction);
+    const role = await fetchRole(client);
     const registered = await Membership.findOne({
       where: { discord_id: discordId },
     });

@@ -1,4 +1,4 @@
-const { API, API_LINK, MEMBER_ROLE } = require("./config.json");
+const { API, API_LINK, MEMBER_ROLE, guildId } = require("./config.json");
 
 async function fetchMemberships() {
   const apiCall = API_LINK;
@@ -22,12 +22,15 @@ async function fetchMemberships() {
 
   return memberships;
 }
+async function fetchRole(client) {
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) {
+    throw new Error("Guild not found,");
+  }
 
-async function fetchRole(interaction) {
-  const role = interaction.guild.roles.cache.find(
-    (role) => role.name === MEMBER_ROLE
-  );
+  const role = guild.roles.cache.find((role) => role.name === MEMBER_ROLE);
 
   return role;
 }
+
 module.exports = { fetchMemberships, fetchRole };

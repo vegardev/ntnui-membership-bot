@@ -18,9 +18,9 @@ module.exports = {
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .setContexts(InteractionContextType.Guild),
-  async execute(interaction) {
+  async execute(interaction, client) {
     const member = interaction.options.getMember("target");
-    const role = await fetchRole(interaction);
+    const role = await fetchRole(client);
 
     if (!role) {
       return interaction.reply({
