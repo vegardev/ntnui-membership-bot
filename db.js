@@ -1,5 +1,4 @@
 const { Schema, default: mongoose } = require("mongoose");
-const { DB_CONNECTION } = require("./config.json");
 const moment = require("moment-timezone");
 const dateOslo = moment.tz(Date.now(), "Europe/Oslo");
 
@@ -26,7 +25,7 @@ const Membership = mongoose.model("Membership", membershipSchema);
 // Connect to the database
 async function connectDB() {
   try {
-    await mongoose.connect(DB_CONNECTION);
+    await mongoose.connect(process.env.DB_CONNECTION);
 
     console.log("Connected to MongoDB");
   } catch (err) {

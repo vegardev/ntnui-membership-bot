@@ -5,12 +5,11 @@ const {
   InteractionContextType,
 } = require("discord.js");
 const { fetchRole } = require("../../utilities");
-const { MEMBER_ROLE } = require("../../config.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("grant")
-    .setDescription(`Grant ${MEMBER_ROLE} role to a Discord user.`)
+    .setDescription(`Grant ${process.env.MEMBER_ROLE} role to a Discord user.`)
     .addUserOption((option) =>
       option
         .setName("target")
@@ -24,21 +23,25 @@ module.exports = {
     const role = await fetchRole(client);
     if (!role) {
       return interaction.reply({
-        content: `❔ Role ${MEMBER_ROLE} not found in this server.`,
+        content: `❔ Role ${process.env.MEMBER_ROLE} not found in this server.`,
         flags: MessageFlags.Ephemeral,
       });
     }
 
     try {
-      if (!member.roles.cache.some((role) => role.name === MEMBER_ROLE)) {
+      if (
+        !member.roles.cache.some(
+          (role) => role.name === process.env.MEMBER_ROLE
+        )
+      ) {
         await member.roles.add(role);
         return interaction.reply({
-          content: `✅ Successfully granted the ${MEMBER_ROLE} role to ${member.displayName}.`,
+          content: `✅ Successfully granted the ${process.env.MEMBER_ROLE} role to ${member.displayName}.`,
           flags: MessageFlags.Ephemeral,
         });
       } else {
         return interaction.reply({
-          content: `❌ ${member.displayName} already has the role ${MEMBER_ROLE}.`,
+          content: `❌ ${member.displayName} already has the role ${process.env.MEMBER_ROLE}.`,
           flags: MessageFlags.Ephemeral,
         });
       }

@@ -13,9 +13,44 @@ The bot is built with:
 
 ## 🚀 Quick Start and prerequisites
 
-It is recommended to have the latest version of git and Node installed.
+If you have [Docker](https://www.docker.com/) installed, it is recommended to run this bot as an image.
 
 Make sure you have the required access permissions for the API and database.
+
+1. Simply run the following:
+
+   ```bash
+   docker pull vegardev/ntnui-membership-bot
+   ```
+
+2. Create a `.env` with the following values:
+
+   ```bash
+     token=your-bot-token
+     clientId=your-bot-client-id
+     guildId=your-server-id
+     MEMBER_ROLE=your-server-role-name
+     GROUP_NAME=ntnui-group-slug
+     API=your-api-access-key
+     API_LINK=your-api-link
+     DB_PASSWORD=your-db-password
+     DB_USERNAME=your-db-username
+     DB_CONNECTION=your-db-connection
+   ```
+
+3. Finally, run the bot using either method:
+
+   ```bash
+   docker run -d --env-file .env vegardev/ntnui-membership-bot
+   ```
+
+   You may enter the environment variables directly into the run command as well.
+
+   ```bash
+   docker run -d -e DB_USERNAME=value DB_PASSWORD=your-db-password vegardev/ntnui-membership-bot
+   ```
+
+Optionally, you can clone the project yourself &mdash; it is recommended to have git and Node installed.
 
 1. Clone the repository
 
@@ -30,22 +65,7 @@ Make sure you have the required access permissions for the API and database.
    npm install
    ```
 
-3. Create a `config.json` with the following values:
-
-   ```json
-   {
-     "token": "your-bot-token",
-     "clientId": "your-bot-client-id",
-     "guildId": "your-server-id",
-     "MEMBER_ROLE": "your-server-role-name",
-     "GROUP_NAME": "ntnui-group-slug",
-     "API": "your-api-access-key",
-     "API_LINK": "your-api-link",
-     "DB_PASSWORD": "your-db-password",
-     "DB_USERNAME": "your-db-username",
-     "DB_CONNECTION": "your-db-connection"
-   }
-   ```
+3. Follow step 2 from the other method, creating a `.env` file:
 
 4. Run the bot 🎉
 
@@ -69,15 +89,15 @@ Make sure you have the required access permissions for the API and database.
    <img src="https://i.gyazo.com/92b7038b1ff71da85fb94ad222349e0f.gif" alt="Bot in action">
 </p>
 
-## 🕴️Privacy &mdash; what data is being stored
+## 🕴️ Privacy &mdash; what data is being stored
 
 Privacy is top priority.
 
-This solution stores **Discord user IDs** and **NTNUI IDs** as key-value pairs inside a local database.
+This solution stores **Discord user IDs** and **NTNUI IDs** as key-value pairs in a remote database.
 
-In order to keep track of membership validity, a true/false variable **has_valid_group_membership** is stored.
+To keep track of membership validity, a true/false variable is stored for each user.
 
-To support the future reminder feature, a membership's **expiry date** is stored as well.
+To support the future reminder feature, a membership's expiry date is also stored.
 
 Contact us for any concerns or data removal requests at [qt@vegard.moe](mailto:qt@vegard.moe)
 

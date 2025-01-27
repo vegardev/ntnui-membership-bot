@@ -24,7 +24,7 @@ module.exports = {
 
     if (!role) {
       return interaction.reply({
-        content: `❔ Role ${MEMBER_ROLE} not found in this server.`,
+        content: `❔ Role ${process.env.MEMBER_ROLE} not found in this server.`,
         flags: MessageFlags.Ephemeral,
       });
     }

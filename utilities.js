@@ -1,14 +1,12 @@
-const { API, API_LINK, MEMBER_ROLE, guildId } = require("./config.json");
-
 async function fetchMemberships() {
-  const apiCall = API_LINK;
+  const apiCall = process.env.API_LINK;
   let memberships = [];
 
   try {
     const response = await fetch(apiCall, {
       headers: {
         accept: "application/json",
-        "API-KEY": API,
+        "API-KEY": process.env.API,
       },
     });
     if (!response.ok) {
@@ -23,12 +21,14 @@ async function fetchMemberships() {
   return memberships;
 }
 async function fetchRole(client) {
-  const guild = client.guilds.cache.get(guildId);
+  const guild = client.guilds.cache.get(process.env.guildId);
   if (!guild) {
     throw new Error("Guild not found,");
   }
 
-  const role = guild.roles.cache.find((role) => role.name === MEMBER_ROLE);
+  const role = guild.roles.cache.find(
+    (role) => role.name === process.env.MEMBER_ROLE
+  );
 
   return role;
 }

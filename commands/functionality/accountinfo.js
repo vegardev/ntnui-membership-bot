@@ -13,7 +13,7 @@ module.exports = {
 
     if (!accountInfo) {
       return interaction.reply({
-        content: `❌ Discord user is not registered.`,
+        content: `❌ Your Discord user is not registered yet.`,
         flags: MessageFlags.Ephemeral,
       });
     }

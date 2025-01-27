@@ -8,7 +8,7 @@ const {
   GatewayIntentBits,
   MessageFlags,
 } = require("discord.js");
-const { token } = require("./config.json");
+require("dotenv").config();
 const { refreshSchedule } = require("./scheduler");
 
 // Create a new client instance
@@ -48,7 +48,7 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 // Log in to Discord with your client's token
-client.login(token);
+client.login(process.env.token);
 
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
