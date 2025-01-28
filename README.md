@@ -17,13 +17,20 @@ If you have [Docker](https://www.docker.com/) installed, it is recommended to ru
 
 Make sure you have the required access permissions for the API and database.
 
-1. Simply run the following:
+1. Clone the repository
 
    ```bash
-   docker pull vegardev/ntnui-membership-bot
+   git clone https://github.com/vegardev/ntnui-membership-bot.git
+   cd ntnui-membership-bot/
+   ```
+   
+2. Build the Docker image
+
+   ```bash
+   docker build -t ntnui-membership-bot
    ```
 
-2. Create a `.env` with the following values:
+3. Create a `.env` with the following values
 
    ```bash
      token=your-bot-token
@@ -38,16 +45,16 @@ Make sure you have the required access permissions for the API and database.
      DB_CONNECTION=your-db-connection
    ```
 
-3. Finally, run the bot using either method:
+4. Finally, run the bot using either method
 
    ```bash
-   docker run -d --env-file .env vegardev/ntnui-membership-bot
+   docker run -d --env-file .env ntnui-membership-bot
    ```
 
    You may enter the environment variables directly into the run command as well.
 
    ```bash
-   docker run -d -e DB_USERNAME=value DB_PASSWORD=your-db-password vegardev/ntnui-membership-bot
+   docker run -d -e DB_USERNAME=value DB_PASSWORD=your-db-password ntnui-membership-bot
    ```
 
 Optionally, you can clone the project yourself &mdash; it is recommended to have git and Node installed.
@@ -65,7 +72,7 @@ Optionally, you can clone the project yourself &mdash; it is recommended to have
    npm install
    ```
 
-3. Follow step 2 from the other method, creating a `.env` file:
+3. Follow step 3 from the other method, creating a `.env` file
 
 4. Run the bot 🎉
 
