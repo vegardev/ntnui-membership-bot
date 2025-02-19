@@ -1,3 +1,7 @@
+> [!NOTE]
+> 📝 This project's repository has migrated to [NTNUI Sprint](https://github.com/NTNUI). The latest version of the codebase is now available [here](https://github.com/NTNUI/ntnui-membership-bot).  
+> This repository is no longer maintained. Thanks for checking it out! 🙆‍♀️
+
 # 🤖 NTNUI membership bot
 
 A Discord bot designed to support NTNUI groups by managing and tracking users' membership statuses efficiently.
